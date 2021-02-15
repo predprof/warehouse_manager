@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link href="../static/style.css" rel="stylesheet" type="text/css">
+<title>Typical Climate</title>
+</head>
+<body>
+    <div>
+        <p>Доступные товары</p>
+        <table>
+           <tr>
+               <th>Наименование</th>
+               <th>Длина</th>
+               <th>Ширина</th>
+               <th>Высота</th>
+               <th>Вес</th>
+           </tr>
+            {% for item_name, item_size_x, item_size_y, item_size_z, item_weight in items %}
+                <tr>
+                    <td>{{ item_name }}</td>
+                    <td>{{ item_size_x }}</td>
+                    <td>{{ item_size_y }}</td>
+                    <td>{{ item_size_z }}</td>
+                    <td>{{ item_weight }}</td>
+                    <td>Отправить на склад </td>
+                </tr>
+                {% endfor %}
+        </table>
+    </div>
+</body>
+</html>
