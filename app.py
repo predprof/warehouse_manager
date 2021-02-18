@@ -15,7 +15,10 @@ def main():
     items_data = db.get_items()
     items = [(item.name, item.size_x, item.size_y, item.size_z, item.weight) for item in items_data]
 
-    return render_template('main.html', items=items)
+    stowages_data = db.get_stowages()
+    stowages = [(stowage.name, stowage.size_x, stowage.size_y, stowage.size_z, stowage.item_id) for stowage in stowages_data]
+
+    return render_template('main.html', items=items, stowages=stowages)
 
 
 if __name__ == '__main__':

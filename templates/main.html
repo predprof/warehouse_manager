@@ -28,5 +28,27 @@
                 {% endfor %}
         </table>
     </div>
+
+    <div>
+        <p>Схема склада</p>
+        <table>
+           <tr>
+               <th>Наименование ячейки</th>
+               <th>Ширина</th>
+               <th>Высота</th>
+               <th>Глубина</th>
+               <th>ID товара</th>
+           </tr>
+            {% for stowage_name, stowage_size_x, stowage_size_y, stowage_size_z, stowage_item_id in stowages %}
+                <tr>
+                    <td>{{ stowage_name }}</td>
+                    <td>{{ stowage_size_x }}</td>
+                    <td>{{ stowage_size_y }}</td>
+                    <td>{{ stowage_size_z }}</td>
+                    <td>{{ stowage_item_id }}</td>
+                </tr>
+                {% endfor %}
+        </table>
+    </div>
 </body>
 </html>
