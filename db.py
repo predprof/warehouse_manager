@@ -15,7 +15,6 @@ class Stowage(Base):
     size_x = Column(Integer)
     size_y = Column(Integer)
     size_z = Column(Integer)
-    status = Column(String)
     item_id = Column(ForeignKey('items.id'))
 
 
@@ -43,4 +42,11 @@ def get_stowages():
 # —охранить €чейку
 def add_stowage(new_stowage):
     db_session.add(new_stowage)
+    db_session.commit()
+
+
+# ќчистка таблицы €чеек
+def clean_stowages():
+    # db_session.delete(Stowage)
+    db_session.query(Stowage).delete()
     db_session.commit()
