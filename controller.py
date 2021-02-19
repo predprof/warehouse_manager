@@ -1,5 +1,6 @@
 import json
 import db
+import forms
 
 
 def init_schema():
@@ -34,24 +35,36 @@ def init_schema():
         if len(merged) == 4:
             stowage_size_y = basic_size * 2
 
+        print(merged)
+
         new_stowage = db.Stowage(name=merged[0],
                                  size_x=stowage_size_x,
                                  size_y=stowage_size_y,
-                                 size_z=stowage_size_z
+                                 size_z=stowage_size_z,
+                                 # _json="\"merged\":" + merged
+                                 json=merged
                                  )
         db.add_stowage(new_stowage)
 
         # Удаление обьединенных ячеек из буферного массива (останутся только необъединенные)
         res = [i for i in buf if i not in merged]
         buf = res
-
     # Добавление в БД оставшихся ячеек базового размера
     for entry in buf:
         new_stowage = db.Stowage(name=entry,
                                  size_x=basic_size,
                                  size_y=basic_size,
-                                 size_z=basic_size
+                                 size_z=basic_size,
+                                 json=entry.replace("\"", "")
                                  )
         db.add_stowage(new_stowage)
 
 
+def load_items(new_item):
+
+    print("Loading!", new_item)
+    db.add_items(new_item)
+
+
+def unload_item(uid):
+    print("Unloading ", uid)

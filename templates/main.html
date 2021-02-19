@@ -7,23 +7,49 @@
 </head>
 <body>
     <div>
-        <p>Доступные товары</p>
+    <p>Добавить накладную</p>
+    <form action="" method="post" novalidate>
+        <table>
+            <tr>
+                <th>Наименование</th>
+                <th>Длина</th>
+                <th>Ширина</th>
+                <th>Высота</th>
+                <th>Вес</th>
+            </tr>
+            <tr>
+                <td>{{ form1.name.label }}{{ form1.name(size=50) }}</td>
+                <td>{{ form1.size_x.label }}{{ form1.size_x(size=4) }}</td>
+                <td>{{ form1.size_y.label }}{{ form1.size_y(size=4) }}</td>
+                <td>{{ form1.size_z.label }}{{ form1.size_z(size=4) }}</td>
+                <td>{{ form1.weight.label }}{{ form1.weight(size=4) }}</td>
+            </tr>
+
+        </table>
+        <p>{{ form1.submit() }}</p>
+    </form>
+    </div>
+
+    <div>
+        <p>Доступные на складе товары</p>
         <table>
            <tr>
+               <th>ID</th>
                <th>Наименование</th>
                <th>Длина</th>
                <th>Ширина</th>
                <th>Высота</th>
                <th>Вес</th>
            </tr>
-            {% for item_name, item_size_x, item_size_y, item_size_z, item_weight in items %}
+            {% for item_id, item_name, item_size_x, item_size_y, item_size_z, item_weight in items %}
                 <tr>
+                    <td>{{ item_id }}</td>
                     <td>{{ item_name }}</td>
                     <td>{{ item_size_x }}</td>
                     <td>{{ item_size_y }}</td>
                     <td>{{ item_size_z }}</td>
                     <td>{{ item_weight }}</td>
-                    <td>Отправить на склад </td>
+                    <td>Выдать </td>
                 </tr>
                 {% endfor %}
         </table>
