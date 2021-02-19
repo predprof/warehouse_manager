@@ -38,7 +38,7 @@ class Item(Base):
     size_z = Column(Integer)
     weight = Column(Integer)
     status = Column(String)
-    stowage_id = Column(ForeignKey('stowage.id'))
+    stowage_id = Column(ForeignKey('stowages.id'))
 
 
 # Получить список товаров

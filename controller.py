@@ -1,6 +1,5 @@
 import json
 import db
-import forms
 
 
 def init_schema():
@@ -60,9 +59,14 @@ def init_schema():
         db.add_stowage(new_stowage)
 
 
-def load_items(new_item):
-
-    print("Loading!", new_item)
+def load_items(form):
+    print("Loading new item!")
+    new_item = db.Item(name=form.name.data,
+                       size_x=form.size_x.data,
+                       size_y=form.size_y.data,
+                       size_z=form.size_z.data,
+                       weight=form.weight.data,
+                       status="Loaded")
     db.add_items(new_item)
 
 

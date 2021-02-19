@@ -8,7 +8,7 @@
 <body>
     <div>
     <p>Добавить накладную</p>
-    <form action="" method="post" novalidate>
+    <form action="/" method="post" novalidate>
         <table>
             <tr>
                 <th>Наименование</th>
@@ -18,13 +18,10 @@
                 <th>Вес</th>
             </tr>
             <tr>
-                <td>{{ form1.name.label }}{{ form1.name(size=50) }}</td>
-                <td>{{ form1.size_x.label }}{{ form1.size_x(size=4) }}</td>
-                <td>{{ form1.size_y.label }}{{ form1.size_y(size=4) }}</td>
-                <td>{{ form1.size_z.label }}{{ form1.size_z(size=4) }}</td>
-                <td>{{ form1.weight.label }}{{ form1.weight(size=4) }}</td>
+                {% for field in form1 %}
+                    <td>{{ field }} </td>
+                {% endfor %}
             </tr>
-
         </table>
         <p>{{ form1.submit() }}</p>
     </form>
