@@ -10,7 +10,3 @@ class InvoiceForm(FlaskForm):
     size_y = IntegerField('size_z', validators=[DataRequired()])
     weight = IntegerField('weight', validators=[DataRequired()])
     submit = SubmitField('Save')
-
-# class ListForms(FlaskForm):
-#    name = StringField('List of forms')
-#    list = FieldList(FormField(InvoiceForm), min_entries=5, max_entries=7)

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import db
 import controller
 
@@ -14,11 +14,11 @@ controller.init_schema()
 
 
 # Модуль front-end: просмотр сведений
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
 def main():
     form1 = InvoiceForm()
     if form1.validate_on_submit():
-        controller.load_items(form1)
+        controller.add_item(form1)
 
     items_data = db.get_items()
     items = [(item.id, item.name, item.size_x, item.size_y, item.size_z, item.weight, item.stowage_id) for item in items_data]
@@ -32,15 +32,17 @@ def main():
 # Модуль размещение товаров на складе
 @app.route('/put', methods=['POST'])
 def load():
-    projectpath = request.form['projectFilepath']
-    return "/"
+    print("Loading!!!")
+    controller.load_items()
+    return redirect("/", code=302, Response=None)
 
 
 # Модуль выгрузки товара со склада
 @app.route('/get', methods=['POST'])
 def unload():
-    projectpath = request.form['projectFilepath']
-    return "/"
+    print("Unloading!!!")
+
+    return redirect("/", code=302, Response=None)
 
 
 if __name__ == '__main__':

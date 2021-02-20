@@ -9,7 +9,7 @@
     <div>
         <p>Доступные на складе товары</p>
         <table>
-           <tr>
+            <tr>
                <th>ID</th>
                <th>Наименование</th>
                <th>Длина</th>
@@ -17,7 +17,7 @@
                <th>Высота</th>
                <th>Вес</th>
                <th>ID чейки</th>
-           </tr>
+            </tr>
             {% for item_id, item_name, item_size_x, item_size_y, item_size_z, item_weight, item_stowage_id in items %}
                 <tr>
                     <td>{{ item_id }}</td>
@@ -27,10 +27,13 @@
                     <td>{{ item_size_z }}</td>
                     <td>{{ item_weight }}</td>
                     <td>{{ item_stowage_id }}</td>
-                    <td>Выдать </td>
+                    <td><a href="">Выдать</a></td>
                 </tr>
                 {% endfor %}
         </table>
+        <form action="/put" method="post">
+            <button type="submit">Распределить</button>
+        </form>
     </div>
     <div>
     <p>Добавить товар</p>

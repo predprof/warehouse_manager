@@ -1,5 +1,6 @@
 import json
 import db
+import operator
 
 
 def init_schema():
@@ -41,7 +42,7 @@ def init_schema():
                                  size_x=stowage_size_x,
                                  size_y=stowage_size_y,
                                  size_z=stowage_size_z,
-                                 volume=stowage_size_x*stowage_size_y*stowage_size_x,
+                                 volume=stowage_size_x*stowage_size_y*stowage_size_z,
                                  json=merged,
                                  empty=True
                                  )
@@ -65,8 +66,7 @@ def init_schema():
         db.add_stowage(new_stowage)
 
 
-def load_items(form):
-    print("Loading new item!")
+def add_item(form):
     new_item = db.Item(name=form.name.data,
                        size_x=form.size_x.data,
                        size_y=form.size_y.data,
@@ -74,15 +74,41 @@ def load_items(form):
                        weight=form.weight.data
                        )
 
-    # Логика выбора места
-    stowages = db.get_stowages()
-    # stowages.sort
-    # for stowage in stowages:
-    # if stowage.empty == True:
-
-
     # Добавление в БД новой записи о товаре
     db.add_items(new_item)
+
+
+# Распределяем товары
+def load_items():
+    # Получаем свободные места
+    stowages = db.get_stowages()
+
+    # Получаем нераспределенные товары
+    all_items = db.get_items()
+    items = [i for i in all_items if i.stowage_id is None]
+
+    # Товары больше 30кг размещаем прежде всего, как можно ниже
+    heavy = [i for i in all_items if i.weight >= 30]
+    light = [i for i in all_items if i.weight < 30]
+
+    stowages_sorted = sorted(stowages, key=operator.attrgetter('volume'))
+    items_sorted_weight = sorted(items, key=operator.attrgetter('weight'), reverse=True)
+
+    for s in stowages_sorted:
+        print(s.volume)
+
+    for i in items_sorted_weight:
+        print(i.weight)
+
+    for i in items_sorted_weight:
+        for s in stowages_sorted:
+            if s.empty & (i.size_x <= s.size_x) & (i.size_y <= s.size_y) & (i.size_z <= s.size_z):
+                i.stowage_id = s.id
+                s.empty = False
+                # Сообщить манипулятору
+                break
+
+    print("Loading ")
 
 
 def unload_item(uid):
