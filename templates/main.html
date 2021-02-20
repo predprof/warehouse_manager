@@ -37,8 +37,9 @@
                <th>Ширина</th>
                <th>Высота</th>
                <th>Вес</th>
+               <th>ID чейки</th>
            </tr>
-            {% for item_id, item_name, item_size_x, item_size_y, item_size_z, item_weight in items %}
+            {% for item_id, item_name, item_size_x, item_size_y, item_size_z, item_weight, item_stowage_id in items %}
                 <tr>
                     <td>{{ item_id }}</td>
                     <td>{{ item_name }}</td>
@@ -46,6 +47,7 @@
                     <td>{{ item_size_y }}</td>
                     <td>{{ item_size_z }}</td>
                     <td>{{ item_weight }}</td>
+                    <td>{{ item_stowage_id }}</td>
                     <td>Выдать </td>
                 </tr>
                 {% endfor %}
@@ -56,19 +58,25 @@
         <p>Схема склада</p>
         <table>
            <tr>
-               <th>Наименование ячейки</th>
+               <th>ID</th>
+               <th>Ряд</th>
+               <th>Ярус</th>
                <th>Ширина</th>
                <th>Высота</th>
                <th>Глубина</th>
-               <th>ID товара</th>
+               <th>JSON</th>
+               <th>Пуста?</th>
            </tr>
-            {% for stowage_name, stowage_size_x, stowage_size_y, stowage_size_z, stowage_item_id in stowages %}
+            {% for stowage_id, stowage_row, stowage_level, stowage_size_x, stowage_size_y, stowage_size_z, stowage_json, stowage_empty in stowages %}
                 <tr>
-                    <td>{{ stowage_name }}</td>
+                    <td>{{ stowage_id }}</td>
+                    <td>{{ stowage_row }}</td>
+                    <td>{{ stowage_level }}</td>
                     <td>{{ stowage_size_x }}</td>
                     <td>{{ stowage_size_y }}</td>
                     <td>{{ stowage_size_z }}</td>
-                    <td>{{ stowage_item_id }}</td>
+                    <td>{{ stowage_json }}</td>
+                    <td>{{ stowage_empty }}</td>
                 </tr>
                 {% endfor %}
         </table>

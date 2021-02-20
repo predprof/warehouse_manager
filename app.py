@@ -24,10 +24,10 @@ def main():
         controller.load_items(form1)
 
     items_data = db.get_items()
-    items = [(item.id, item.name, item.size_x, item.size_y, item.size_z, item.weight) for item in items_data]
+    items = [(item.id, item.name, item.size_x, item.size_y, item.size_z, item.weight, item.stowage_id) for item in items_data]
 
     stowages_data = db.get_stowages()
-    stowages = [(stowage.name, stowage.size_x, stowage.size_y, stowage.size_z, stowage.json) for stowage in stowages_data]
+    stowages = [(stowage.id, stowage.row, stowage.level, stowage.size_x, stowage.size_y, stowage.size_z, stowage.json, stowage.empty) for stowage in stowages_data]
 
     return render_template('main.html', items=items, stowages=stowages, form1=form1)
 

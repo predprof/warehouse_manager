@@ -1,6 +1,7 @@
 import json
 
-from sqlalchemy import MetaData, create_engine, Integer, Column, String, ForeignKey
+from sqlalchemy import MetaData, create_engine, Integer, Column, String, ForeignKey, Boolean
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import sessionmaker
@@ -14,11 +15,14 @@ db_session = sessionmaker(bind=engine)()
 class Stowage(Base):
     __tablename__ = 'stowages'
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    row = Column(String, nullable=False)
+    level = Column(Integer, nullable=False)
     size_x = Column(Integer, nullable=False)
     size_y = Column(Integer, nullable=False)
     size_z = Column(Integer, nullable=False)
+    volume = Column(Integer, nullable=False)
     json = Column('json', String, nullable=False)
+    empty = Column(Boolean, nullable=False)
 
     #@hybrid_property
     #def json(self):
@@ -31,13 +35,12 @@ class Stowage(Base):
 
 class Item(Base):
     __tablename__ = 'items'
-    id = Column(Integer, primary_key=True)
+    id = Column(UUID, primary_key=True)
     name = Column(String)
     size_x = Column(Integer)
     size_y = Column(Integer)
     size_z = Column(Integer)
     weight = Column(Integer)
-    status = Column(String)
     stowage_id = Column(ForeignKey('stowages.id'))
 
 
