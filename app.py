@@ -17,9 +17,6 @@ controller.init_schema()
 @app.route('/', methods=['GET', 'POST'])
 def main():
     form1 = InvoiceForm()
-    # form2 = InvoiceForm()
-    # form3 = InvoiceForm()
-    # forms = ListForms()
     if form1.validate_on_submit():
         controller.load_items(form1)
 
@@ -31,20 +28,19 @@ def main():
 
     return render_template('main.html', items=items, stowages=stowages, form1=form1)
 
-#
-# # Модуль front-end: размещение товаров на складе
-# @app.route('/put', methods=['POST'])
-# def handle_data():
-#     projectpath = request.form['projectFilepath']
-#     return render_template()
-#
-#
-# # Модуль front-end: выгрузка товаров со склада
-# @app.route('/get', methods=['POST'])
-# def handle_data():
-#     projectpath = request.form['projectFilepath']
-#     # your code
-#     # return a response
+
+# Модуль размещение товаров на складе
+@app.route('/put', methods=['POST'])
+def load():
+    projectpath = request.form['projectFilepath']
+    return "/"
+
+
+# Модуль выгрузки товара со склада
+@app.route('/get', methods=['POST'])
+def unload():
+    projectpath = request.form['projectFilepath']
+    return "/"
 
 
 if __name__ == '__main__':

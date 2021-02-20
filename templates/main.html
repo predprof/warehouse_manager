@@ -7,27 +7,6 @@
 </head>
 <body>
     <div>
-    <p>Добавить накладную</p>
-    <form action="/" method="post" novalidate>
-        <table>
-            <tr>
-                <th>Наименование</th>
-                <th>Длина</th>
-                <th>Ширина</th>
-                <th>Высота</th>
-                <th>Вес</th>
-            </tr>
-            <tr>
-                {% for field in form1 %}
-                    <td>{{ field }} </td>
-                {% endfor %}
-            </tr>
-        </table>
-        <p>{{ form1.submit() }}</p>
-    </form>
-    </div>
-
-    <div>
         <p>Доступные на складе товары</p>
         <table>
            <tr>
@@ -53,7 +32,26 @@
                 {% endfor %}
         </table>
     </div>
-
+    <div>
+    <p>Добавить товар</p>
+    <form action="/" method="post" novalidate>
+        <table>
+            <tr>
+                <th>Наименование</th>
+                <th>Длина</th>
+                <th>Ширина</th>
+                <th>Высота</th>
+                <th>Вес</th>
+            </tr>
+            <tr>
+                {% for field in form1 %}
+                    <td>{{ field }} </td>
+                {% endfor %}
+            </tr>
+        </table>
+        <p>{{ form1.submit() }}</p>
+    </form>
+    </div>
     <div>
         <p>Схема склада</p>
         <table>

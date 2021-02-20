@@ -21,7 +21,7 @@ CREATE TABLE stowages
 
 CREATE TABLE items
 (
-  id               uuid PRIMARY KEY        DEFAULT uuid_generate_v4 (),
+  id               uuid PRIMARY KEY DEFAULT uuid_generate_v4 (),
   name             VARCHAR(255)            NOT NULL,
   size_x           INTEGER                 NOT NULL,
   size_y           INTEGER                 NOT NULL,

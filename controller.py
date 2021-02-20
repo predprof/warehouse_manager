@@ -71,14 +71,14 @@ def load_items(form):
                        size_x=form.size_x.data,
                        size_y=form.size_y.data,
                        size_z=form.size_z.data,
-                       weight=form.weight.data,
-                       status="Loaded")
+                       weight=form.weight.data
+                       )
 
     # Логика выбора места
-    # stowages = db.get_stowages()
+    stowages = db.get_stowages()
     # stowages.sort
     # for stowage in stowages:
-    # if stowage.is_free == True:
+    # if stowage.empty == True:
 
 
     # Добавление в БД новой записи о товаре

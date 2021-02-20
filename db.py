@@ -1,9 +1,8 @@
-import json
+import uuid
 
 from sqlalchemy import MetaData, create_engine, Integer, Column, String, ForeignKey, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import sessionmaker
 
 metadata = MetaData()
@@ -14,33 +13,25 @@ db_session = sessionmaker(bind=engine)()
 
 class Stowage(Base):
     __tablename__ = 'stowages'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, unique=True)
     row = Column(String, nullable=False)
     level = Column(Integer, nullable=False)
     size_x = Column(Integer, nullable=False)
     size_y = Column(Integer, nullable=False)
     size_z = Column(Integer, nullable=False)
     volume = Column(Integer, nullable=False)
-    json = Column('json', String, nullable=False)
+    json = Column(String, nullable=False)
     empty = Column(Boolean, nullable=False)
-
-    #@hybrid_property
-    #def json(self):
-    #    return json.loads(self._json)
-
-    #@json.setter
-    #def json(self, json_to_save):
-    #    self._json = json.dumps(json_to_save)
 
 
 class Item(Base):
     __tablename__ = 'items'
-    id = Column(UUID, primary_key=True)
-    name = Column(String)
-    size_x = Column(Integer)
-    size_y = Column(Integer)
-    size_z = Column(Integer)
-    weight = Column(Integer)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True)
+    name = Column(String, nullable=False)
+    size_x = Column(Integer, nullable=False)
+    size_y = Column(Integer, nullable=False)
+    size_z = Column(Integer, nullable=False)
+    weight = Column(Integer, nullable=False)
     stowage_id = Column(ForeignKey('stowages.id'))
 
 
