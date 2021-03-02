@@ -22,6 +22,7 @@ def init_schema():
         x += 1
 
     # Предварительная очистка таблицы ячеек
+    # db.clean_items()
     db.clean_stowages()
 
     # Добавление в БД объединенных ячеек с фактическими размерами
@@ -65,6 +66,19 @@ def init_schema():
                                  )
         db.add_stowage(new_stowage)
 
+    # Добавление в БД ячейки, которая уловно обозначает удаленный склад
+    new_stowage = db.Stowage(id=999999,
+                             row="Remote",
+                             level=1,
+                             size_x=basic_size,
+                             size_y=basic_size,
+                             size_z=basic_size,
+                             volume=basic_size * basic_size * basic_size,
+                             json="no",
+                             empty=False
+                             )
+    db.add_stowage(new_stowage)
+
 
 def add_item(form):
     new_item = db.Item(name=form.name.data,
@@ -80,35 +94,58 @@ def add_item(form):
 
 # Распределяем товары
 def load_items():
-    # Получаем свободные места
+    # Получаем места
     stowages = db.get_stowages()
 
     # Получаем нераспределенные товары
     all_items = db.get_items()
     items = [i for i in all_items if i.stowage_id is None]
 
-    # Товары больше 30кг размещаем прежде всего, как можно ниже
-    heavy = [i for i in all_items if i.weight >= 30]
-    light = [i for i in all_items if i.weight < 30]
-
+    # Сортировка ячеек по возрастанию объема
     stowages_sorted = sorted(stowages, key=operator.attrgetter('volume'))
+
+    # Сортировка товаров по убыванию веса (на размещение прежде всего пойдут наиболее тяжелые товары)
     items_sorted_weight = sorted(items, key=operator.attrgetter('weight'), reverse=True)
 
+    # Вывод
     for s in stowages_sorted:
         print(s.volume)
-
     for i in items_sorted_weight:
         print(i.weight)
 
+    # Алгоритм выбора подходящей ячейки
+    # По всем товарам
     for i in items_sorted_weight:
+        stowages_suitable = []
+        # По всем ячейкам
         for s in stowages_sorted:
+            # Если ячейка пуста и подходит по размерам, то добавляем её в дополнительный массив
             if s.empty & (i.size_x <= s.size_x) & (i.size_y <= s.size_y) & (i.size_z <= s.size_z):
-                i.stowage_id = s.id
-                s.empty = False
-                # Сообщить манипулятору
-                break
+                stowages_suitable.append(s)
 
-    print("Loading ")
+        # Если подходящих ячеек 0, то размещаем на удаленный склад
+        if len(stowages_suitable) == 0:
+            i.stowage_id = 999999
+            break
+
+        # Сохраняем объем самой маленькой подходящей ячейки
+        smallest_volume = stowages_suitable[0].volume
+        print("smallest = ", smallest_volume)
+
+        # Отбираем ячейки этого объема и сортируем этот набор по возрастанию высоты
+        stowages_lowest = sorted((s for s in stowages_suitable if s.volume <= smallest_volume),
+                                 key=operator.attrgetter('level'))
+
+        # Размещаем тяжелые товары прежде всего
+        i.stowage_id = stowages_lowest[0].id
+        stowages_lowest[0].empty = False
+
+        # Замершаем работу с БД
+        db.put_item_in_stowage(i, stowages_lowest[0])
+
+        # Сообщить манипулятору
+
+    print("Loading complete!")
 
 
 def unload_item(uid):

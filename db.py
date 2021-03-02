@@ -50,9 +50,20 @@ def get_stowages():
     return db_session.query(Stowage)
 
 
-# —охранить €чейку
+# —охранить новую €чейку
 def add_stowage(new_stowage):
     db_session.add(new_stowage)
+    db_session.commit()
+
+
+# –азмещаем товар на складе
+def put_item_in_stowage(item, stowage):
+    db_session.query(Stowage).\
+        filter(Stowage.id == stowage.id).\
+        update({"empty": False})
+    db_session.query(Item).\
+        filter(Item.id == item.id).\
+        update({"stowage_id": stowage.id})
     db_session.commit()
 
 
@@ -60,4 +71,9 @@ def add_stowage(new_stowage):
 def clean_stowages():
     # db_session.delete(Stowage)
     db_session.query(Stowage).delete()
+    db_session.commit()
+
+
+def clean_items():
+    db_session.query(Item).delete()
     db_session.commit()

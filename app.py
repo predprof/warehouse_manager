@@ -40,6 +40,7 @@ def load():
 # Модуль выгрузки товара со склада
 @app.route('/get', methods=['POST'])
 def unload():
+    unload_item()
     print("Unloading!!!")
 
     return redirect("/", code=302, Response=None)
