@@ -35,7 +35,7 @@ class Item(Base):
     stowage_id = Column(ForeignKey('stowages.id'))
 
 
-# Получить список товаров
+# С•РѕР»СѓС‡РёС‚СЊ СЃРїРёСЃРѕРє С‚РѕРІР°СЂРѕРІ
 def get_items():
     return db_session.query(Item)
 
@@ -45,18 +45,18 @@ def add_items(new_item):
     db_session.commit()
 
 
-# Получить список ячеек
+# С•РѕР»СѓС‡РёС‚СЊ СЃРїРёСЃРѕРє В¤С‡РµРµРє
 def get_stowages():
     return db_session.query(Stowage)
 
 
-# Сохранить новую ячейку
+# вЂ”РѕС…СЂР°РЅРёС‚СЊ РЅРѕРІСѓСЋ В¤С‡РµР№РєСѓ
 def add_stowage(new_stowage):
     db_session.add(new_stowage)
     db_session.commit()
 
 
-# Размещаем товар на складе
+# вЂ“Р°Р·РјРµС‰Р°РµРј С‚РѕРІР°СЂ РЅР° СЃРєР»Р°РґРµ
 def put_item_in_stowage(item, stowage):
     db_session.query(Stowage).\
         filter(Stowage.id == stowage.id).\
@@ -67,7 +67,7 @@ def put_item_in_stowage(item, stowage):
     db_session.commit()
 
 
-# Очистка таблицы ячеек
+# СњС‡РёСЃС‚РєР° С‚Р°Р±Р»РёС†С‹ В¤С‡РµРµРє
 def clean_stowages():
     # db_session.delete(Stowage)
     db_session.query(Stowage).delete()

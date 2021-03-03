@@ -3,12 +3,21 @@ import db
 import operator
 
 
-def init_schema():
-    # Получение JSON-схемы
+def init():
+    # РћС‡РёСЃС‚РєР°
+    db.clean_items()
+    # РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј Р‘Р”: СЃС…РµРјР° СЃРєР»Р°РґР°
+    init_storage_schema()
+    # РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј Р‘Р”: С‚РµСЃС‚РѕРІР°СЏ РЅР°РєР»Р°РґРЅР°СЏ
+    init_demo_items()
+
+
+def init_storage_schema():
+    # РџРѕР»СѓС‡РµРЅРёРµ JSON-СЃС…РµРјС‹
     json_schema = '{"size":{"size_x": 3,"size_y": 3,"size_z": 1},"merged":[["A1", "A2", "B1", "B2"],["B3", "C3"]]}'
     schema = json.loads(json_schema)
 
-    # Буферный массив с ячейками базового размера
+    # Р‘СѓС„РµСЂРЅС‹Р№ РјР°СЃСЃРёРІ СЃ СЏС‡РµР№РєР°РјРё Р±Р°Р·РѕРІРѕРіРѕ СЂР°Р·РјРµСЂР°
     alphabet = "ABCDEFGHIJKLMNOPRSTUVWXYZ"
     numbers = "1234567890"
     basic_size = 1000
@@ -21,11 +30,10 @@ def init_schema():
             y += 1
         x += 1
 
-    # Предварительная очистка таблицы ячеек
-    # db.clean_items()
+    # РџСЂРµРґРІР°СЂРёС‚РµР»СЊРЅР°СЏ РѕС‡РёСЃС‚РєР° С‚Р°Р±Р»РёС†С‹ СЏС‡РµРµРє
     db.clean_stowages()
 
-    # Добавление в БД объединенных ячеек с фактическими размерами
+    # Р”РѕР±Р°РІР»РµРЅРёРµ РІ Р‘Р” РѕР±СЉРµРґРёРЅРµРЅРЅС‹С… СЏС‡РµРµРє СЃ С„Р°РєС‚РёС‡РµСЃРєРёРјРё СЂР°Р·РјРµСЂР°РјРё
     for merged in schema['merged']:
         stowage_size_x = basic_size
         stowage_size_y = basic_size
@@ -43,30 +51,30 @@ def init_schema():
                                  size_x=stowage_size_x,
                                  size_y=stowage_size_y,
                                  size_z=stowage_size_z,
-                                 volume=stowage_size_x*stowage_size_y*stowage_size_z,
+                                 volume=stowage_size_x * stowage_size_y * stowage_size_z,
                                  json=merged,
                                  empty=True
                                  )
         db.add_stowage(new_stowage)
 
-        # Удаление обьединенных ячеек из буферного массива (останутся только необъединенные)
+        # РЈРґР°Р»РµРЅРёРµ РѕР±СЊРµРґРёРЅРµРЅРЅС‹С… СЏС‡РµРµРє РёР· Р±СѓС„РµСЂРЅРѕРіРѕ РјР°СЃСЃРёРІР° (РѕСЃС‚Р°РЅСѓС‚СЃСЏ С‚РѕР»СЊРєРѕ РЅРµРѕР±СЉРµРґРёРЅРµРЅРЅС‹Рµ)
         res = [i for i in buf if i not in merged]
         buf = res
 
-    # Добавление в БД оставшихся ячеек базового размера
+    # Р”РѕР±Р°РІР»РµРЅРёРµ РІ Р‘Р” РѕСЃС‚Р°РІС€РёС…СЃСЏ СЏС‡РµРµРє Р±Р°Р·РѕРІРѕРіРѕ СЂР°Р·РјРµСЂР°
     for entry in buf:
         new_stowage = db.Stowage(row=entry[0],
                                  level=int(entry[1]),
                                  size_x=basic_size,
                                  size_y=basic_size,
                                  size_z=basic_size,
-                                 volume=basic_size*basic_size*basic_size,
+                                 volume=basic_size * basic_size * basic_size,
                                  json=entry.replace("\"", ""),
                                  empty=True
                                  )
         db.add_stowage(new_stowage)
 
-    # Добавление в БД ячейки, которая уловно обозначает удаленный склад
+    # Р”РѕР±Р°РІР»РµРЅРёРµ РІ Р‘Р” СЏС‡РµР№РєРё, РєРѕС‚РѕСЂР°СЏ СѓР»РѕРІРЅРѕ РѕР±РѕР·РЅР°С‡Р°РµС‚ СѓРґР°Р»РµРЅРЅС‹Р№ СЃРєР»Р°Рґ
     new_stowage = db.Stowage(id=999999,
                              row="Remote",
                              level=1,
@@ -88,65 +96,66 @@ def add_item(form):
                        weight=form.weight.data
                        )
 
-    # Добавление в БД новой записи о товаре
+    # Р”РѕР±Р°РІР»РµРЅРёРµ РІ Р‘Р” РЅРѕРІРѕР№ Р·Р°РїРёСЃРё Рѕ С‚РѕРІР°СЂРµ
     db.add_items(new_item)
 
 
-# Распределяем товары
+# Р Р°СЃРїСЂРµРґРµР»СЏРµРј С‚РѕРІР°СЂС‹
 def load_items():
-    # Получаем места
+    # РџРѕР»СѓС‡Р°РµРј РјРµСЃС‚Р°
     stowages = db.get_stowages()
-
-    # Получаем нераспределенные товары
+    # РџРѕР»СѓС‡Р°РµРј РЅРµСЂР°СЃРїСЂРµРґРµР»РµРЅРЅС‹Рµ С‚РѕРІР°СЂС‹
     all_items = db.get_items()
     items = [i for i in all_items if i.stowage_id is None]
-
-    # Сортировка ячеек по возрастанию объема
+    # РЎРѕСЂС‚РёСЂРѕРІРєР° СЏС‡РµРµРє РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ РѕР±СЉРµРјР°
     stowages_sorted = sorted(stowages, key=operator.attrgetter('volume'))
-
-    # Сортировка товаров по убыванию веса (на размещение прежде всего пойдут наиболее тяжелые товары)
+    # РЎРѕСЂС‚РёСЂРѕРІРєР° С‚РѕРІР°СЂРѕРІ РїРѕ СѓР±С‹РІР°РЅРёСЋ РІРµСЃР° (РЅР° СЂР°Р·РјРµС‰РµРЅРёРµ РїСЂРµР¶РґРµ РІСЃРµРіРѕ РїРѕР№РґСѓС‚ РЅР°РёР±РѕР»РµРµ С‚СЏР¶РµР»С‹Рµ С‚РѕРІР°СЂС‹)
     items_sorted_weight = sorted(items, key=operator.attrgetter('weight'), reverse=True)
 
-    # Вывод
-    for s in stowages_sorted:
-        print(s.volume)
-    for i in items_sorted_weight:
-        print(i.weight)
-
-    # Алгоритм выбора подходящей ячейки
-    # По всем товарам
+    # РђР»РіРѕСЂРёС‚Рј РІС‹Р±РѕСЂР° РїРѕРґС…РѕРґСЏС‰РµР№ СЏС‡РµР№РєРё
+    # РџРѕ РІСЃРµРј С‚РѕРІР°СЂР°Рј
     for i in items_sorted_weight:
         stowages_suitable = []
-        # По всем ячейкам
+        # РџРѕ РІСЃРµРј СЏС‡РµР№РєР°Рј
         for s in stowages_sorted:
-            # Если ячейка пуста и подходит по размерам, то добавляем её в дополнительный массив
-            if s.empty & (i.size_x <= s.size_x) & (i.size_y <= s.size_y) & (i.size_z <= s.size_z):
+            # Р•СЃР»Рё СЏС‡РµР№РєР° РїСѓСЃС‚Р° Рё РїРѕРґС…РѕРґРёС‚ РїРѕ СЂР°Р·РјРµСЂР°Рј, С‚Рѕ РґРѕР±Р°РІР»СЏРµРј РµС‘ РІ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Р№ РјР°СЃСЃРёРІ
+            if s.empty and \
+                    ((i.size_x <= s.size_x) and (i.size_y <= s.size_y) and (i.size_z <= s.size_z)) \
+                    or ((i.size_x <= s.size_y) and (i.size_y <= s.size_x) and (i.size_z <= s.size_z)):\
+                    # or ((i.size_x <= s.size_x) and (i.size_y <= s.size_z) and (i.size_z <= s.size_y)):
                 stowages_suitable.append(s)
 
-        # Если подходящих ячеек 0, то размещаем на удаленный склад
+        # Р•СЃР»Рё РїРѕРґС…РѕРґСЏС‰РёС… СЏС‡РµРµРє 0, С‚Рѕ СЂР°Р·РјРµС‰Р°РµРј РЅР° СѓРґР°Р»РµРЅРЅС‹Р№ СЃРєР»Р°Рґ
         if len(stowages_suitable) == 0:
             i.stowage_id = 999999
             break
 
-        # Сохраняем объем самой маленькой подходящей ячейки
+        # РЎРѕС…СЂР°РЅСЏРµРј РѕР±СЉРµРј СЃР°РјРѕР№ РјР°Р»РµРЅСЊРєРѕР№ РїРѕРґС…РѕРґСЏС‰РµР№ СЏС‡РµР№РєРё
         smallest_volume = stowages_suitable[0].volume
         print("smallest = ", smallest_volume)
-
-        # Отбираем ячейки этого объема и сортируем этот набор по возрастанию высоты
+        # РћС‚Р±РёСЂР°РµРј СЏС‡РµР№РєРё СЌС‚РѕРіРѕ РѕР±СЉРµРјР° Рё СЃРѕСЂС‚РёСЂСѓРµРј СЌС‚РѕС‚ РЅР°Р±РѕСЂ РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ РІС‹СЃРѕС‚С‹
         stowages_lowest = sorted((s for s in stowages_suitable if s.volume <= smallest_volume),
                                  key=operator.attrgetter('level'))
-
-        # Размещаем тяжелые товары прежде всего
+        # Р Р°Р·РјРµС‰Р°РµРј С‚СЏР¶РµР»С‹Рµ С‚РѕРІР°СЂС‹ РїСЂРµР¶РґРµ РІСЃРµРіРѕ
         i.stowage_id = stowages_lowest[0].id
         stowages_lowest[0].empty = False
-
-        # Замершаем работу с БД
+        # Р—Р°РјРµСЂС€Р°РµРј СЂР°Р±РѕС‚Сѓ СЃ Р‘Р”
         db.put_item_in_stowage(i, stowages_lowest[0])
-
-        # Сообщить манипулятору
+        # РЎРѕРѕР±С‰РёС‚СЊ РјР°РЅРёРїСѓР»СЏС‚РѕСЂСѓ
 
     print("Loading complete!")
 
 
 def unload_item(uid):
     print("Unloading ", uid)
+
+
+# Р”РѕР±Р°РІР»РµРЅРёРµ РІ Р‘Р” РґРµРјРѕРЅСЃС‚СЂР°С†РёРѕРЅРЅРѕР№ РЅР°РєР»Р°РґРЅРѕР№
+def init_demo_items():
+    db.clean_items()
+    new_item = db.Item(name="РљРѕРјРїСЊСЋС‚РµСЂ 1",size_x=900,size_y=900,size_z=300,weight=15)
+    db.add_items(new_item)
+    new_item = db.Item(name="РњРѕРЅРёС‚РѕСЂ",size_x=900,size_y=1500,size_z=50,weight=7)
+    db.add_items(new_item)
+    new_item = db.Item(name="Р”РѕСЃРєР° РјР°СЂРєРµСЂРЅР°СЏ",size_x=1900,size_y=1100,size_z=900,weight=5)
+    db.add_items(new_item)

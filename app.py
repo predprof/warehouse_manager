@@ -2,19 +2,18 @@ from flask import Flask, render_template, request, redirect, url_for
 import db
 import controller
 
-# Создаем экземпляр веб-приложения
+# РЎРѕР·РґР°РµРј СЌРєР·РµРјРїР»СЏСЂ РІРµР±-РїСЂРёР»РѕР¶РµРЅРёСЏ
 from config import Config
 from forms import InvoiceForm
-
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Инициализируем БД схемы склада
-controller.init_schema()
+# РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Р‘Р”
+controller.init()
 
 
-# Модуль front-end: просмотр сведений
-@app.route('/', methods=['GET'])
+# РњРѕРґСѓР»СЊ front-end: РїСЂРѕСЃРјРѕС‚СЂ СЃРІРµРґРµРЅРёР№
+@app.route('/', methods=['GET', 'POST'])
 def main():
     form1 = InvoiceForm()
     if form1.validate_on_submit():
@@ -29,7 +28,7 @@ def main():
     return render_template('main.html', items=items, stowages=stowages, form1=form1)
 
 
-# Модуль размещение товаров на складе
+# РњРѕРґСѓР»СЊ СЂР°Р·РјРµС‰РµРЅРёРµ С‚РѕРІР°СЂРѕРІ РЅР° СЃРєР»Р°РґРµ
 @app.route('/put', methods=['POST'])
 def load():
     print("Loading!!!")
@@ -37,15 +36,14 @@ def load():
     return redirect("/", code=302, Response=None)
 
 
-# Модуль выгрузки товара со склада
+# РњРѕРґСѓР»СЊ РІС‹РіСЂСѓР·РєРё С‚РѕРІР°СЂР° СЃРѕ СЃРєР»Р°РґР°
 @app.route('/get', methods=['POST'])
 def unload():
-    unload_item()
     print("Unloading!!!")
 
     return redirect("/", code=302, Response=None)
 
 
 if __name__ == '__main__':
-    # Запускаем веб-приложение
+    # Р—Р°РїСѓСЃРєР°РµРј РІРµР±-РїСЂРёР»РѕР¶РµРЅРёРµ
     app.run()
