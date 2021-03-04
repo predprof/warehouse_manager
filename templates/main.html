@@ -27,11 +27,15 @@
                     <td>{{ item_size_z }}</td>
                     <td>{{ item_weight }}</td>
                     <td>{{ item_stowage_id }}</td>
-                    <td><a href="">Выдать</a></td>
+                    <td>
+                        <form action="/unload/{{ item_id }}" method="post">
+                            <button type="submit">Выдать</button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
         </table>
-        <form action="/put" method="post">
+        <form action="/load" method="post">
             <button type="submit">Распределить</button>
         </form>
     </div>

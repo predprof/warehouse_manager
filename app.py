@@ -29,7 +29,7 @@ def main():
 
 
 # Модуль размещение товаров на складе
-@app.route('/put', methods=['POST'])
+@app.route('/load', methods=['POST'])
 def load():
     print("Loading!!!")
     controller.load_items()
@@ -37,10 +37,10 @@ def load():
 
 
 # Модуль выгрузки товара со склада
-@app.route('/get', methods=['POST'])
-def unload():
+@app.route('/unload/<uuid:item_id>', methods=['POST'])
+def unload(item_id):
+    controller.unload_item(item_id)
     print("Unloading!!!")
-
     return redirect("/", code=302, Response=None)
 
 

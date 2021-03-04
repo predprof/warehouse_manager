@@ -102,27 +102,23 @@ def add_item(form):
 
 # Распределяем товары
 def load_items():
-    # Получаем места
-    stowages = db.get_stowages()
-    # Получаем нераспределенные товары
+    # Получаем пустые места и сортируем их по возрастанию объема
+    all_stowages = db.get_stowages()
+    stowages = [s for s in all_stowages if s.empty is True]
+    stowages_sorted = sorted(stowages, key=operator.attrgetter('volume'))
+    # Получаем нераспределенные товары и сортируем их по убыванию веса
     all_items = db.get_items()
     items = [i for i in all_items if i.stowage_id is None]
-    # Сортировка ячеек по возрастанию объема
-    stowages_sorted = sorted(stowages, key=operator.attrgetter('volume'))
-    # Сортировка товаров по убыванию веса (на размещение прежде всего пойдут наиболее тяжелые товары)
     items_sorted_weight = sorted(items, key=operator.attrgetter('weight'), reverse=True)
 
-    # Алгоритм выбора подходящей ячейки
-    # По всем товарам
+    # Перебираем товары и определяем набор подходящих ячеек
     for i in items_sorted_weight:
         stowages_suitable = []
-        # По всем ячейкам
         for s in stowages_sorted:
-            # Если ячейка пуста и подходит по размерам, то добавляем её в дополнительный массив
-            if s.empty and \
-                    ((i.size_x <= s.size_x) and (i.size_y <= s.size_y) and (i.size_z <= s.size_z)) \
-                    or ((i.size_x <= s.size_y) and (i.size_y <= s.size_x) and (i.size_z <= s.size_z)):\
-                    # or ((i.size_x <= s.size_x) and (i.size_y <= s.size_z) and (i.size_z <= s.size_y)):
+            # Если ячейка подходит по размерам, то добавляем её в дополнительный массив
+            if ((i.size_x <= s.size_x) and (i.size_y <= s.size_y) and (i.size_z <= s.size_z)) \
+                or ((i.size_x <= s.size_y) and (i.size_y <= s.size_x) and (i.size_z <= s.size_z)):\
+                # or ((i.size_x <= s.size_x) and (i.size_y <= s.size_z) and (i.size_z <= s.size_y)):
                 stowages_suitable.append(s)
 
         # Если подходящих ячеек 0, то размещаем на удаленный склад
@@ -140,22 +136,23 @@ def load_items():
         i.stowage_id = stowages_lowest[0].id
         stowages_lowest[0].empty = False
         # Замершаем работу с БД
-        db.put_item_in_stowage(i, stowages_lowest[0])
+        db.load_item_in_stowage(i, stowages_lowest[0])
         # Сообщить манипулятору
 
     print("Loading complete!")
 
 
 def unload_item(uid):
+    db.unload_item_from_stowage(uid)
     print("Unloading ", uid)
 
 
 # Добавление в БД демонстрационной накладной
 def init_demo_items():
     db.clean_items()
-    new_item = db.Item(name="Компьютер 1",size_x=900,size_y=900,size_z=300,weight=15)
+    new_item = db.Item(name="Компьютер 1", size_x=900, size_y=900, size_z=300, weight=15)
     db.add_items(new_item)
-    new_item = db.Item(name="Монитор",size_x=900,size_y=1500,size_z=50,weight=7)
+    new_item = db.Item(name="Монитор", size_x=900, size_y=1500, size_z=50, weight=7)
     db.add_items(new_item)
-    new_item = db.Item(name="Доска маркерная",size_x=1900,size_y=1100,size_z=900,weight=5)
+    new_item = db.Item(name="Доска маркерная", size_x=1900, size_y=1100, size_z=900, weight=5)
     db.add_items(new_item)

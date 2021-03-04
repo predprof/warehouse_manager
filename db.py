@@ -57,14 +57,30 @@ def add_stowage(new_stowage):
 
 
 # –азмещаем товар на складе
-def put_item_in_stowage(item, stowage):
-    db_session.query(Stowage).\
-        filter(Stowage.id == stowage.id).\
+def load_item_in_stowage(item, stowage):
+    db_session.query(Stowage). \
+        filter(Stowage.id == stowage.id). \
         update({"empty": False})
-    db_session.query(Item).\
-        filter(Item.id == item.id).\
+    db_session.query(Item). \
+        filter(Item.id == item.id). \
         update({"stowage_id": stowage.id})
     db_session.commit()
+
+
+# Выгрузка товара со склалда
+def unload_item_from_stowage(item_id):
+    print("unloading item with uuid ", item_id)
+    it = db_session.query(Item). \
+        filter(Item.id == item_id)
+    # id = item[0].stowage_id
+    if it[0].stowage_id is not None:
+        db_session.query(Stowage). \
+            filter(Stowage.id == it[0].stowage_id). \
+            update({"empty": True})
+        db_session.query(Item). \
+            filter(Item.id == item_id). \
+            delete()
+        db_session.commit()
 
 
 # ќчистка таблицы ¤чеек
