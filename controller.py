@@ -102,10 +102,6 @@ def add_item(form):
 
 # Распределяем товары
 def load_items():
-    # Получаем пустые места и сортируем их по возрастанию объема
-    all_stowages = db.get_stowages()
-    stowages = [s for s in all_stowages if s.empty is True]
-    stowages_sorted = sorted(stowages, key=operator.attrgetter('volume'))
     # Получаем нераспределенные товары и сортируем их по убыванию веса
     all_items = db.get_items()
     items = [i for i in all_items if i.stowage_id is None]
@@ -113,13 +109,19 @@ def load_items():
 
     # Перебираем товары и определяем набор подходящих ячеек
     for i in items_sorted_weight:
+        # Получаем пустые места и сортируем их по возрастанию объема
+        all_stowages = db.get_stowages()
+        stowages = [s for s in all_stowages if s.empty is True]
+        stowages_sorted = sorted(stowages, key=operator.attrgetter('volume'))
+
         stowages_suitable = []
         for s in stowages_sorted:
             # Если ячейка подходит по размерам, то добавляем её в дополнительный массив
-            if ((i.size_x <= s.size_x) and (i.size_y <= s.size_y) and (i.size_z <= s.size_z)) \
-                or ((i.size_x <= s.size_y) and (i.size_y <= s.size_x) and (i.size_z <= s.size_z)):\
-                # or ((i.size_x <= s.size_x) and (i.size_y <= s.size_z) and (i.size_z <= s.size_y)):
-                stowages_suitable.append(s)
+            if s.empty:
+                if ((i.size_x <= s.size_x) and (i.size_y <= s.size_y) and (i.size_z <= s.size_z)) \
+                        or ((i.size_x <= s.size_y) and (i.size_y <= s.size_x) and (i.size_z <= s.size_z)):
+                    # or ((i.size_x <= s.size_x) and (i.size_y <= s.size_z) and (i.size_z <= s.size_y)):
+                    stowages_suitable.append(s)
 
         # Если подходящих ячеек 0, то размещаем на удаленный склад
         if len(stowages_suitable) == 0:
@@ -132,7 +134,7 @@ def load_items():
         # Отбираем ячейки этого объема и сортируем этот набор по возрастанию высоты
         stowages_lowest = sorted((s for s in stowages_suitable if s.volume <= smallest_volume),
                                  key=operator.attrgetter('level'))
-        # Размещаем тяжелые товары прежде всего
+        # Размещаем тем самым тяжелый товар прежде всего
         i.stowage_id = stowages_lowest[0].id
         stowages_lowest[0].empty = False
         # Замершаем работу с БД
