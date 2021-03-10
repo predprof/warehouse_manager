@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 import db
 import controller
+import manipulator
 
 # Создаем экземпляр веб-приложения
 from config import Config
@@ -8,7 +9,7 @@ from forms import InvoiceForm
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Инициализация БД
+# Инициализация
 controller.init()
 
 

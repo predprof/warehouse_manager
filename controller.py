@@ -1,22 +1,28 @@
+# Модули python
 import json
-import db
 import operator
+
+# Наши модули
+import db
+import manipulator
 
 
 def init():
-    # Очистка
+    # Получение JSON-схемы
+    json_scheme_test = manipulator.get_scheme_test()
+    print(json_scheme_test)
+    json_scheme = '{"size":{"size_x": 3,"size_y": 3,"size_z": 1},"merged":[["A1", "A2", "B1", "B2"],["B3", "C3"]]}'
+    # Очистка БД
     db.clean_items()
     # Инициализируем БД: схема склада
-    init_storage_schema()
+    init_storage_scheme(json_scheme)
     # Инициализируем БД: тестовая накладная
     init_demo_items()
 
 
-def init_storage_schema():
-    # Получение JSON-схемы
-    json_schema = '{"size":{"size_x": 3,"size_y": 3,"size_z": 1},"merged":[["A1", "A2", "B1", "B2"],["B3", "C3"]]}'
+def init_storage_scheme(json_schema):
+    # Парсинг JSON-схемы
     schema = json.loads(json_schema)
-
     # Буферный массив с ячейками базового размера
     alphabet = "ABCDEFGHIJKLMNOPRSTUVWXYZ"
     numbers = "1234567890"
@@ -78,10 +84,10 @@ def init_storage_schema():
     new_stowage = db.Stowage(id=999999,
                              row="Remote",
                              level=1,
-                             size_x=basic_size,
-                             size_y=basic_size,
-                             size_z=basic_size,
-                             volume=basic_size * basic_size * basic_size,
+                             size_x=basic_size*10,
+                             size_y=basic_size*10,
+                             size_z=basic_size*10,
+                             volume=basic_size * basic_size * basic_size * 1000,
                              json="no",
                              empty=False
                              )
@@ -127,6 +133,8 @@ def load_items():
         if len(stowages_suitable) == 0:
             i.stowage_id = 999999
             break
+
+            # TODO: Большие тяжелые товары уходят на удаленный склад и прерывают поиск места для остальных. ИСправить
 
         # Сохраняем объем самой маленькой подходящей ячейки
         smallest_volume = stowages_suitable[0].volume
