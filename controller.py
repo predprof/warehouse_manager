@@ -1,5 +1,5 @@
-# Модули python
-import json
+# Модули python.
+# operator - для упорядочивания по определенному параметру, зная его имя
 import operator
 
 # Наши модули
@@ -7,31 +7,34 @@ import db
 import manipulator
 
 
+# Общая инициализация + инициализация БД
 def init():
     # Получение JSON-схемы
-    json_scheme_test = manipulator.get_scheme_test()
-    print(json_scheme_test)
-    json_scheme = '{"size":{"size_x": 3,"size_y": 3,"size_z": 1},"merged":[["A1", "A2", "B1", "B2"],["B3", "C3"]]}'
+    scheme = manipulator.get_scheme()
+    # Если получить схему у манипулятора удалось, то:
+    if len(scheme) > 0:
+        # Инициализируем схемы склада в БД
+        init_storage_scheme(scheme)
+        print("Схема склада обновлена!")
     # Очистка БД
     db.clean_items()
-    # Инициализируем БД: схема склада
-    init_storage_scheme(json_scheme)
     # Инициализируем БД: тестовая накладная
     init_demo_items()
+    print("Тестовые товары занесены")
 
 
-def init_storage_scheme(json_schema):
-    # Парсинг JSON-схемы
-    schema = json.loads(json_schema)
-    # Буферный массив с ячейками базового размера
+# Инициализация схемы склада в БД из схемы, которую прислал манипулятор
+def init_storage_scheme(scheme):
+    print("Инициализирую схему склада")
+    # Создаем буферный массив с ячейками базового размера (единичные) и гененируем им правильные имена
     alphabet = "ABCDEFGHIJKLMNOPRSTUVWXYZ"
     numbers = "1234567890"
     basic_size = 1000
     buf = []
     x = 0
-    while x < schema['size']['size_x']:
+    while x < scheme['size']['size_x']:
         y = 0
-        while y < schema['size']['size_y']:
+        while y < scheme['size']['size_y']:
             buf.append(alphabet[x] + numbers[y])
             y += 1
         x += 1
@@ -39,8 +42,8 @@ def init_storage_scheme(json_schema):
     # Предварительная очистка таблицы ячеек
     db.clean_stowages()
 
-    # Добавление в БД объединенных ячеек с фактическими размерами
-    for merged in schema['merged']:
+    # Добавление в БД объединенных ячеек с фактическими размерами (двойными и четверными)
+    for merged in scheme['merged']:
         stowage_size_x = basic_size
         stowage_size_y = basic_size
         stowage_size_z = basic_size
@@ -63,7 +66,7 @@ def init_storage_scheme(json_schema):
                                  )
         db.add_stowage(new_stowage)
 
-        # Удаление обьединенных ячеек из буферного массива (останутся только необъединенные)
+        # Удаление обьединенных ячеек из буферного массива (останутся только необъединенные, единичного размера)
         res = [i for i in buf if i not in merged]
         buf = res
 
@@ -81,6 +84,7 @@ def init_storage_scheme(json_schema):
         db.add_stowage(new_stowage)
 
     # Добавление в БД ячейки, которая уловно обозначает удаленный склад
+    # (добавлена для того, чтобы не выносить признак удаленного склада в отдельный столбец)
     new_stowage = db.Stowage(id=999999,
                              row="Remote",
                              level=1,
@@ -92,9 +96,12 @@ def init_storage_scheme(json_schema):
                              empty=False
                              )
     db.add_stowage(new_stowage)
+    print("Схема склада готова!")
 
 
+# Добавляем в накладную новый товар из полученной от front-end формы
 def add_item(form):
+    print("Добавляю новый товар в наколадную")
     new_item = db.Item(name=form.name.data,
                        size_x=form.size_x.data,
                        size_y=form.size_y.data,
@@ -103,42 +110,44 @@ def add_item(form):
                        )
 
     # Добавление в БД новой записи о товаре
-    db.add_items(new_item)
+    db.add_item(new_item)
+    print("Товар добавлен")
 
 
-# Распределяем товары
+# Распределяем и загружаем товары
 def load_items():
     # Получаем нераспределенные товары и сортируем их по убыванию веса
-    all_items = db.get_items()
+    all_items = db.get_all_items()
     items = [i for i in all_items if i.stowage_id is None]
     items_sorted_weight = sorted(items, key=operator.attrgetter('weight'), reverse=True)
 
-    # Перебираем товары и определяем набор подходящих ячеек
+    # Перебираем товары и определяем набор подходящих ячеек для каждого товара
     for i in items_sorted_weight:
-        # Получаем пустые места и сортируем их по возрастанию объема
-        all_stowages = db.get_stowages()
+        print("Загрузка нераспределенных товаров")
+        # Получаем пустые ячейки и сортируем их по возрастанию объема
+        all_stowages = db.get_all_stowages()
         stowages = [s for s in all_stowages if s.empty is True]
         stowages_sorted = sorted(stowages, key=operator.attrgetter('volume'))
 
+        # Перебираем все ячейки
         stowages_suitable = []
         for s in stowages_sorted:
-            # Если ячейка подходит по размерам, то добавляем её в дополнительный массив
+            # Если ячейка всё еще пуста и подходит по размерам, то добавляем её в дополнительный массив
             if s.empty:
                 if ((i.size_x <= s.size_x) and (i.size_y <= s.size_y) and (i.size_z <= s.size_z)) \
                         or ((i.size_x <= s.size_y) and (i.size_y <= s.size_x) and (i.size_z <= s.size_z)):
                     # or ((i.size_x <= s.size_x) and (i.size_y <= s.size_z) and (i.size_z <= s.size_y)):
                     stowages_suitable.append(s)
 
-        # Если подходящих ячеек 0, то размещаем на удаленный склад
+        # Если подходящих ячеек не нашлось, то размещаем на удаленный склад
         if len(stowages_suitable) == 0:
             i.stowage_id = 999999
             break
-
             # TODO: Большие тяжелые товары уходят на удаленный склад и прерывают поиск места для остальных. ИСправить
 
         # Сохраняем объем самой маленькой подходящей ячейки
         smallest_volume = stowages_suitable[0].volume
-        print("smallest = ", smallest_volume)
+
         # Отбираем ячейки этого объема и сортируем этот набор по возрастанию высоты
         stowages_lowest = sorted((s for s in stowages_suitable if s.volume <= smallest_volume),
                                  key=operator.attrgetter('level'))
@@ -149,7 +158,6 @@ def load_items():
         db.load_item_in_stowage(i, stowages_lowest[0])
         # Сообщить манипулятору
 
-    print("Loading complete!")
 
 
 def unload_item(uid):
@@ -161,8 +169,8 @@ def unload_item(uid):
 def init_demo_items():
     db.clean_items()
     new_item = db.Item(name="Компьютер 1", size_x=900, size_y=900, size_z=300, weight=15)
-    db.add_items(new_item)
+    db.add_item(new_item)
     new_item = db.Item(name="Монитор", size_x=900, size_y=1500, size_z=50, weight=7)
-    db.add_items(new_item)
+    db.add_item(new_item)
     new_item = db.Item(name="Доска маркерная", size_x=1900, size_y=1100, size_z=900, weight=5)
-    db.add_items(new_item)
+    db.add_item(new_item)

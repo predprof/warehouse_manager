@@ -36,27 +36,27 @@ class Item(Base):
 
 
 # ѕолучить список товаров
-def get_items():
+def get_all_items():
     return db_session.query(Item)
 
 
-def add_items(new_item):
+def add_item(new_item):
     db_session.add(new_item)
     db_session.commit()
 
 
 # ѕолучить список ¤чеек
-def get_stowages():
+def get_all_stowages():
     return db_session.query(Stowage)
 
 
-# —охранить новую ¤чейку
+# Сохранить новую ¤чейку
 def add_stowage(new_stowage):
     db_session.add(new_stowage)
     db_session.commit()
 
 
-# –азмещаем товар на складе
+# Размещаем товар на складе. Операция должна быть атомарной (неразделимой), поэтому логика помещена сюда
 def load_item_in_stowage(item, stowage):
     db_session.query(Stowage). \
         filter(Stowage.id == stowage.id). \
@@ -67,12 +67,10 @@ def load_item_in_stowage(item, stowage):
     db_session.commit()
 
 
-# Выгрузка товара со склалда
+# Выгрузка товара со склалда. Операция должна быть атомарной (неразделимой), поэтому логика помещена сюда
 def unload_item_from_stowage(item_id):
-    print("unloading item with uuid ", item_id)
     it = db_session.query(Item). \
         filter(Item.id == item_id)
-    # id = item[0].stowage_id
     if it[0].stowage_id is not None:
         db_session.query(Stowage). \
             filter(Stowage.id == it[0].stowage_id). \
@@ -85,7 +83,6 @@ def unload_item_from_stowage(item_id):
 
 # ќчистка таблицы ¤чеек
 def clean_stowages():
-    # db_session.delete(Stowage)
     db_session.query(Stowage).delete()
     db_session.commit()
 
