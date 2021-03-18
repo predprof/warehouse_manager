@@ -41,7 +41,7 @@ def main():
 def load():
     print("Обнаружен запрос на загрузку нераспределенных товаров")
     controller.load_items()
-    return redirect("/", code=202, Response=None)
+    return redirect("/", code=302, Response=None)
 
 
 # Функция выгрузки товара со склада
@@ -49,4 +49,4 @@ def load():
 def unload(item_id):
     controller.unload_item(item_id)
     print("Обнаружен запрос на выгрузку товара с id ", item_id)
-    return redirect("/", code=202, Response=None)
+    return redirect("/", code=302, Response=None)

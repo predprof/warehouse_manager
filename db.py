@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 metadata = MetaData()
-engine = create_engine('postgresql://admin:12345@localhost:5432/storage_manager_olymp', echo=True)
+engine = create_engine('postgresql://admin:admin@localhost:5432/storage_manager_olymp', echo=True)
 Base = declarative_base()
 db_session = sessionmaker(bind=engine)()
 
