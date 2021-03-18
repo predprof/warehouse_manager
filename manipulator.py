@@ -4,20 +4,20 @@ import json
 manipulator_url_get_scheme = 'https://run.mocky.io/v3/ae75fa43-17cd-49a1-bd10-bf76fd3c40dd'
 manipulator_url_post_load = 'https://run.mocky.io/v3/0e1bf89d-e50a-4347-a713-ea8c8389c9bd'
 manipulator_url_get_unload = 'https://run.mocky.io/v3/0e1bf89d-e50a-4347-a713-ea8c8389c9bd'
-# TODO: Раскомментировать при получении адреса манипулятора
+# TODO: Р Р°СЃРєРѕРјРјРµРЅС‚РёСЂРѕРІР°С‚СЊ РїСЂРё РїРѕР»СѓС‡РµРЅРёРё Р°РґСЂРµСЃР° РјР°РЅРёРїСѓР»СЏС‚РѕСЂР°
 # manipulator_url_get_scheme = 'http://?????/scheme'
 # manipulator_url_post_load = 'http://?????/'
 # manipulator_url_get_unload = 'http://?????/position'
 
 
-# Получить JSON-схему от манипулятора
+# РџРѕР»СѓС‡РёС‚СЊ JSON-СЃС…РµРјСѓ РѕС‚ РјР°РЅРёРїСѓР»СЏС‚РѕСЂР°
 def get_scheme():
-    # Запрашиваем у манипулятора схему. Результат в формате JSON возвращаем
+    # Р—Р°РїСЂР°С€РёРІР°РµРј Сѓ РјР°РЅРёРїСѓР»СЏС‚РѕСЂР° СЃС…РµРјСѓ. Р РµР·СѓР»СЊС‚Р°С‚ РІ С„РѕСЂРјР°С‚Рµ JSON РІРѕР·РІСЂР°С‰Р°РµРј
     res = requests.get(manipulator_url_get_scheme)
     return res.json()
 
 
-# Загрузить товар на склад
+# Р—Р°РіСЂСѓР·РёС‚СЊ С‚РѕРІР°СЂ РЅР° СЃРєР»Р°Рґ
 def load(item_id, destination):
     data = {"uuid": str(item_id),
             "destination": destination}
@@ -27,7 +27,7 @@ def load(item_id, destination):
     return res.json()
 
 
-# Выгрузить товар со склада
+# Р’С‹РіСЂСѓР·РёС‚СЊ С‚РѕРІР°СЂ СЃРѕ СЃРєР»Р°РґР°
 def unload(destination):
     print("Unloading from stowage with destination json ", destination)
     data = {"destination": destination}
