@@ -10,6 +10,7 @@ app.config.from_object(Config)
 
 # Инициализация
 controller.init()
+print("Приложение готово к работе")
 
 # Запуск веб-приложения
 if __name__ == '__main__':
@@ -19,6 +20,7 @@ if __name__ == '__main__':
 # Функция отрисовки главного экрана
 @app.route('/', methods=['GET', 'POST'])
 def main():
+    print("Загружаю главную страницу")
     form1 = InvoiceForm()
     if form1.validate_on_submit():
         print("Обнаружены данные из формы")

@@ -11,6 +11,7 @@ Base = declarative_base()
 db_session = sessionmaker(bind=engine)()
 
 
+# Создаем сущность Ячейка для связи с БД
 class Stowage(Base):
     __tablename__ = 'stowages'
     id = Column(Integer, primary_key=True, unique=True)
@@ -24,6 +25,7 @@ class Stowage(Base):
     empty = Column(Boolean, nullable=False)
 
 
+# Создаем сущность Товар для связи с БД
 class Item(Base):
     __tablename__ = 'items'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True)
@@ -35,11 +37,24 @@ class Item(Base):
     stowage_id = Column(ForeignKey('stowages.id'))
 
 
-# ѕолучить список товаров
+# Получить товар по ID
+def get_item(id):
+    return db_session.query(Item). \
+        filter(Item.id == id)
+
+
+# Получить ячейку по ID
+def get_stowage(id):
+    return db_session.query(Stowage). \
+        filter(Stowage.id == id)
+
+
+# Получить список товаров
 def get_all_items():
     return db_session.query(Item)
 
 
+# Добавление нового товара
 def add_item(new_item):
     db_session.add(new_item)
     db_session.commit()
@@ -81,12 +96,13 @@ def unload_item_from_stowage(item_id):
         db_session.commit()
 
 
-# ќчистка таблицы ¤чеек
+# Очистка таблицы ¤чеек
 def clean_stowages():
     db_session.query(Stowage).delete()
     db_session.commit()
 
 
+# Очистка таблицы товаров
 def clean_items():
     db_session.query(Item).delete()
     db_session.commit()

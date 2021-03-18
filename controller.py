@@ -152,17 +152,37 @@ def load_items():
         stowages_lowest = sorted((s for s in stowages_suitable if s.volume <= smallest_volume),
                                  key=operator.attrgetter('level'))
         # Размещаем тем самым тяжелый товар прежде всего
-        i.stowage_id = stowages_lowest[0].id
-        stowages_lowest[0].empty = False
-        # Замершаем работу с БД
-        db.load_item_in_stowage(i, stowages_lowest[0])
-        # Сообщить манипулятору
+
+        # Сообщаем манипулятору id товара и json-координаты ячейки
+        print("Загрузка товара с id", i.id, "в ячейку с JSON =", stowages_lowest[0].json)
+        res = manipulator.load(i.id, stowages_lowest[0].json)
+        # Если манипулятор сообщил о том, что всё хорошо, фиксируем это у себя в БД
+        if res == "ok":
+            print("Загрузка прошла успешно")
+            # Отмечаем в товаре ID-места, где он лежит, и в ячейке - что она уже не пуста
+            i.stowage_id = stowages_lowest[0].id
+            stowages_lowest[0].empty = False
+            # Фиксируем результат размещением изменений в БД
+            db.load_item_in_stowage(i, stowages_lowest[0].json)
+        else:
+            print("Загрузка прошла с ошибками!!!!")
 
 
-
-def unload_item(uid):
-    db.unload_item_from_stowage(uid)
-    print("Unloading ", uid)
+# Выгружаем товар из ячейки
+def unload_item(item_id):
+    print("Выгрузка товара с id ", item_id, '!')
+    # Собираем нужные нам данные из БД
+    item = db.get_item(item_id)
+    stowage = item.stowage_id
+    destination = stowage.json
+    # Сообщаем манипулятору о желании выгрузить товар
+    res = manipulator.unload(destination)
+    # Если манипулятор ответил ОК, отмечаем выдачу у себя в БД
+    if res == 'ok':
+        print("Выгрузка успешна")
+        db.unload_item_from_stowage(item_id)
+    else:
+        print("Выгрузка прошла с ошибками!")
 
 
 # Добавление в БД демонстрационной накладной
