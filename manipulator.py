@@ -9,8 +9,8 @@ import json
 # manipulator_url_get_unload = 'https://run.mocky.io/v3/0e1bf89d-e50a-4347-a713-ea8c8389c9bd'
 # Для запуска через heroku
 manipulator_url_get_scheme = os.getenv("URL_TO_GET_SCHEME")
-manipulator_url_post_load = os.getenv("URL_TO_GET_STATUS_OK")
-manipulator_url_get_unload = os.getenv("URL_TO_GET_STATUS_OK")
+manipulator_url_post_load = os.getenv("URL_TO_LOAD")
+manipulator_url_get_unload = os.getenv("URL_TO_UNLOAD")
 
 
 # Получить JSON-схему от манипулятора
@@ -26,6 +26,7 @@ def load(item_id, destination):
             "destination": destination}
     data_json = json.dumps(data)
     payload = {"json_payload": data_json}
+    print("JSON payload:", payload)
     res = requests.post(manipulator_url_post_load, payload)
     return res.json()
 
@@ -36,5 +37,6 @@ def unload(destination):
     data = {"destination": destination}
     data_json = json.dumps(data)
     payload = {"json_payload": data_json}
+    print("JSON payload:", payload)
     res = requests.get(manipulator_url_get_unload, payload)
     return res
