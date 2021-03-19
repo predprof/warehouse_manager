@@ -8,10 +8,10 @@ from sqlalchemy.orm import sessionmaker
 
 metadata = MetaData()
 # Для запуска через heroku
-if os.getenv("DATABASE_URL") is None:
+if os.environ['DB_URL'] is None:
     db_path = "postgresql://admin:admin@localhost:5432/storage_manager_olymp"
 else:
-    db_path = os.getenv("DATABASE_URL")
+    db_path = os.environ['DB_URL']
 print("Соединяемся с БД по адресу", db_path)
 engine = create_engine(db_path, echo=True)
 
