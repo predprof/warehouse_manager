@@ -5,7 +5,7 @@ from config import Config
 from forms import InvoiceForm
 
 # Создаем экземпляр веб-приложения Flask
-app = Flask(__name__, template_folder="template")
+app = Flask(__name__, template_folder="templates")
 app.config.from_object(Config)
 
 # Инициализация

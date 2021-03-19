@@ -5,17 +5,17 @@ import json
 
 # Если запускаемся с Heroku, то срабатывают перменные среды, иначе - задаем сами
 
-if os.getenv("URL_TO_GET_SCHEME") == None:
+if os.getenv("URL_TO_GET_SCHEME") is None:
     manipulator_url_get_scheme = 'https://run.mocky.io/v3/ae75fa43-17cd-49a1-bd10-bf76fd3c40dd'
 else:
     manipulator_url_get_scheme = os.getenv("URL_TO_GET_SCHEME")
 
-if os.getenv("URL_TO_LOAD") == None:
+if os.getenv("URL_TO_LOAD") is None:
     manipulator_url_post_load = 'https://run.mocky.io/v3/0e1bf89d-e50a-4347-a713-ea8c8389c9bd'
 else:
     manipulator_url_post_load = os.getenv("URL_TO_LOAD")
 
-if os.getenv("URL_TO_UNLOAD") == None:
+if os.getenv("URL_TO_UNLOAD") is None:
     manipulator_url_get_unload = 'https://run.mocky.io/v3/0e1bf89d-e50a-4347-a713-ea8c8389c9bd'
 else:
     manipulator_url_get_unload = os.getenv("URL_TO_UNLOAD")
