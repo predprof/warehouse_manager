@@ -47,4 +47,4 @@ def unload(destination):
     payload = {"json_payload": data_json}
     print("JSON payload:", payload)
     res = requests.get(manipulator_url_get_unload, payload)
-    return res
+    return res.json()
