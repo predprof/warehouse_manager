@@ -11,13 +11,13 @@ import manipulator
 def init():
     # Получение JSON-схемы
     scheme = manipulator.get_scheme()
+    # Очистка БД
+    db.clean_items()
     # Если получить схему у манипулятора удалось, то:
     if len(scheme) > 0:
         # Инициализируем схемы склада в БД
         init_storage_scheme(scheme)
         print("Схема склада обновлена!")
-    # Очистка БД
-    db.clean_items()
     # Инициализируем БД: тестовая накладная
     init_demo_items()
     print("Тестовые товары занесены")
