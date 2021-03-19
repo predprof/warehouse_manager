@@ -7,7 +7,14 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 metadata = MetaData()
-engine = create_engine('postgresql://admin:admin@localhost:5432/storage_manager_olymp', echo=True)
+# Для запуска через heroku
+if os.getenv("DATABASE_URL") is None:
+    db_path = "postgresql://admin:admin@localhost:5432/storage_manager_olymp"
+else:
+    db_path = os.getenv("DATABASE_URL")
+print("Соединяемся с БД по адресу", db_path)
+engine = create_engine(db_path, echo=True)
+
 Base = declarative_base()
 db_session = sessionmaker(bind=engine)()
 
