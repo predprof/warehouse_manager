@@ -1,3 +1,4 @@
+import os
 import uuid
 
 from sqlalchemy import MetaData, create_engine, Integer, Column, String, ForeignKey, Boolean
@@ -38,15 +39,15 @@ class Item(Base):
 
 
 # Получить товар по ID
-def get_item(id):
+def get_item(item_id):
     return db_session.query(Item). \
-        filter(Item.id == id)
+        filter(Item.id == item_id)
 
 
 # Получить ячейку по ID
-def get_stowage(id):
+def get_stowage(stowage_id):
     return db_session.query(Stowage). \
-        filter(Stowage.id == id)
+        filter(Stowage.id == stowage_id)
 
 
 # Получить список товаров

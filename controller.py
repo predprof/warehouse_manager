@@ -157,8 +157,7 @@ def load_items():
         print("Загрузка товара с id", i.id, "в ячейку с JSON =", stowages_lowest[0].json)
         res = manipulator.load(i.id, stowages_lowest[0].json)
         # Если манипулятор сообщил о том, что всё хорошо, фиксируем это у себя в БД
-        # if res == "ok":
-        if True:
+        if res['status'] == "ok":
             print("Загрузка прошла успешно")
             # Отмечаем в товаре ID-места, где он лежит, и в ячейке - что она уже не пуста
             i.stowage_id = stowages_lowest[0].id
@@ -179,8 +178,7 @@ def unload_item(item_id):
     # Сообщаем манипулятору о желании выгрузить товар
     res = manipulator.unload(destination)
     # Если манипулятор ответил ОК, отмечаем выдачу у себя в БД
-    # if res == 'ok':
-    if True:
+    if res['status'] == "ok":
         print("Выгрузка успешна")
         db.unload_item_from_stowage(item_id)
     else:
